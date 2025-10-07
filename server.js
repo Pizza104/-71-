@@ -1,3 +1,4 @@
+// server.js
 const express = require('express');
 const admin = require('firebase-admin');
 const path = require('path');
@@ -16,25 +17,39 @@ app.set('views', path.join(__dirname, 'views'));
 
 // Inicializa Firebase
 const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
+
 admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
     databaseURL: process.env.FIREBASE_DB_URL
 });
+
 const db = admin.database();
 
-// Rotas
-app.get('/', (req, res) => res.send('Servidor rodando!'));
+// ================== ROTAS ==================
+
+// Raiz redirecionando para o formulário de professor
+app.get('/', (req, res) => res.redirect('/professores/create'));
 
 // Cursos
 app.get('/cursos', async (req, res) => {
-    const snapshot = await db.ref('cursos').once('value');
-    res.render('cursos', { cursos: snapshot.val() || [] });
+    try {
+        const snapshot = await db.ref('cursos').once('value');
+        const cursos = snapshot.val() || [];
+        res.render('cursos', { cursos });
+    } catch (err) {
+        res.status(500).send('Erro ao carregar cursos: ' + err.message);
+    }
 });
 
 // Alunos
 app.get('/alunos', async (req, res) => {
-    const snapshot = await db.ref('alunos').once('value');
-    res.render('alunos', { alunos: snapshot.val() || [] });
+    try {
+        const snapshot = await db.ref('alunos').once('value');
+        const alunos = snapshot.val() || [];
+        res.render('alunos', { alunos });
+    } catch (err) {
+        res.status(500).send('Erro ao carregar alunos: ' + err.message);
+    }
 });
 
 // Integrantes
@@ -55,6 +70,6 @@ app.post('/professores/create', async (req, res) => {
     }
 });
 
-// Porta
+// ================== RODANDO O SERVIDOR ==================
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Servidor rodando na porta ${PORT}`));
