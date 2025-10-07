@@ -28,7 +28,10 @@ const db = admin.database();
 // --------------------- Rotas ---------------------
 
 // Rota principal
-app.get('/integrantes', (req, res) => res.send('Servidor rodando! Firebase conectado com sucesso.'));
+app.get('/', (req, res) => {
+    res.render('integrantes');
+});
+
 
 // --------------------- Cursos ---------------------
 app.get('/cursos', async (req, res) => {
