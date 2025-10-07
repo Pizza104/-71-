@@ -17,27 +17,22 @@ app.set('views', path.join(__dirname, 'views'));
 
 // Inicializa Firebase
 const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
-
 admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
     databaseURL: process.env.FIREBASE_DB_URL
 });
-
 const db = admin.database();
 
-// ================== ROTAS ==================
-
-// Raiz redirecionando para o formulário de professor
-app.get('/', (req, res) => res.redirect('/professores/create'));
+// Rota raiz
+app.get('/', (req, res) => res.send('Servidor rodando! Firebase conectado com sucesso.'));
 
 // Cursos
 app.get('/cursos', async (req, res) => {
     try {
         const snapshot = await db.ref('cursos').once('value');
-        const cursos = snapshot.val() || [];
-        res.render('cursos', { cursos });
+        res.render('cursos_list', { cursos: snapshot.val() || [] });
     } catch (err) {
-        res.status(500).send('Erro ao carregar cursos: ' + err.message);
+        res.status(500).send(err.message);
     }
 });
 
@@ -45,18 +40,19 @@ app.get('/cursos', async (req, res) => {
 app.get('/alunos', async (req, res) => {
     try {
         const snapshot = await db.ref('alunos').once('value');
-        const alunos = snapshot.val() || [];
-        res.render('alunos', { alunos });
+        res.render('alunos_list', { alunos: snapshot.val() || [] });
     } catch (err) {
-        res.status(500).send('Erro ao carregar alunos: ' + err.message);
+        res.status(500).send(err.message);
     }
 });
 
 // Integrantes
 app.get('/integrantes', (req, res) => res.render('integrantes'));
 
-// Cadastrar Professor
-app.get('/professores/create', (req, res) => res.render('create_professor', { form: {}, error: null }));
+// Professores - Criar
+app.get('/professores/create', (req, res) => {
+    res.render('professores_create', { form: {}, error: null });
+});
 
 app.post('/professores/create', async (req, res) => {
     try {
@@ -66,10 +62,20 @@ app.post('/professores/create', async (req, res) => {
         await newRef.set({ nome, disciplina, email });
         res.redirect('/professores/create');
     } catch (err) {
-        res.render('create_professor', { form: req.body, error: err.message });
+        res.render('professores_create', { form: req.body, error: err.message });
     }
 });
 
-// ================== RODANDO O SERVIDOR ==================
+// Professores - Listar
+app.get('/professores', async (req, res) => {
+    try {
+        const snapshot = await db.ref('professores').once('value');
+        res.render('professores_list', { professores: snapshot.val() || [] });
+    } catch (err) {
+        res.status(500).send(err.message);
+    }
+});
+
+// Porta
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Servidor rodando na porta ${PORT}`));
