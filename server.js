@@ -6,16 +6,14 @@ require('dotenv').config();
 
 const app = express();
 
-// --------------------- Configuração do EJS ---------------------
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
-// --------------------- Middlewares -----------------------------
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
 
-// --------------------- Inicializa Firebase ---------------------
+
 const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
 
 admin.initializeApp({
@@ -25,7 +23,6 @@ admin.initializeApp({
 
 const db = admin.database();
 
-// --------------------- Rotas ---------------------
 
 // Rota principal
 app.get('/', (req, res) => {
@@ -33,7 +30,6 @@ app.get('/', (req, res) => {
 });
 
 
-// --------------------- Cursos ---------------------
 app.get('/cursos', async (req, res) => {
     try {
         const snapshot = await db.ref('cursos').once('value');
@@ -43,7 +39,6 @@ app.get('/cursos', async (req, res) => {
     }
 });
 
-// --------------------- Alunos ---------------------
 app.get('/alunos', async (req, res) => {
     try {
         const snapshot = await db.ref('alunos').once('value');
@@ -53,12 +48,10 @@ app.get('/alunos', async (req, res) => {
     }
 });
 
-// --------------------- Integrantes ---------------------
 app.get('/integrantes', (req, res) => {
     res.render('integrantes');
 });
 
-// --------------------- Professores ---------------------
 
 // Formulário para criar professor
 app.get('/professores/create', (req, res) => {
@@ -84,12 +77,16 @@ app.post('/professores/create', async (req, res) => {
 app.get('/professores', async (req, res) => {
     try {
         const snapshot = await db.ref('professores').once('value');
-        res.render('professores_list', { professores: snapshot.val() || [] });
+        const data = snapshot.val() || {};
+
+        // ✅ Converte o objeto retornado em array para evitar erro no EJS
+        const professores = Object.values(data);
+
+        res.render('professores_list', { professores });
     } catch (err) {
         res.status(500).send('Erro ao buscar professores: ' + err.message);
     }
 });
 
-// --------------------- Porta do servidor ---------------------
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Servidor rodando na porta ${PORT}`));
