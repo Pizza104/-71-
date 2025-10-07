@@ -1,0 +1,17 @@
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><title>Cursos</title></head>
+<body>
+  <%- include('partials/navbar') %>
+  <h1>Cursos</h1>
+  <% if (cursos.length === 0) { %>
+    <p>Nenhum curso cadastrado.</p>
+  <% } else { %>
+    <ul>
+      <% cursos.forEach(c => { %>
+        <li><strong><%= c.nome || '—' %></strong> — <%= c.descricao || '' %></li>
+      <% }) %>
+    </ul>
+  <% } %>
+</body>
+</html>

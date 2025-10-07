@@ -1,0 +1,15 @@
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><title>Cadastrar Professor</title></head>
+<body>
+  <%- include('partials/navbar') %>
+  <h1>Cadastrar Professor</h1>
+  <% if (error) { %><p style="color:red"><%= error %></p><% } %>
+  <form action="/professores/create" method="post">
+    <label>Nome<br><input name="nome" value="<%= form.nome || '' %>"></label><br>
+    <label>Disciplina<br><input name="disciplina" value="<%= form.disciplina || '' %>"></label><br>
+    <label>Email<br><input name="email" value="<%= form.email || '' %>"></label><br><br>
+    <button type="submit">Cadastrar</button>
+  </form>
+</body>
+</html>

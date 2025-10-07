@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Integrantes</title>
+</head>
+<body>
+  <%- include('partials/navbar') %>
+
+  <h1>Integrantes</h1>
+  <div>
+    <% const integrantes = [
+        { nome: 'Kaua' },
+        { nome: 'João' }
+    ]; %>
+
+    <% integrantes.forEach((i, index) => { %>
+      <div style="display:inline-block; text-align:center; margin:8px;">
+        <img src="/images/integrante_<%= index + 1 %>.png" alt="<%= i.nome %>" width="140" height="140"><br>
+        <small><%= i.nome %></small>
+      </div>
+    <% }) %>
+  </div>
+</body>
+</html>
