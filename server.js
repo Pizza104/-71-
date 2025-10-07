@@ -1,4 +1,5 @@
 // server.js
+console.log('Servidor inicializando...');
 const express = require('express');
 const admin = require('firebase-admin');
 require('dotenv').config(); // garante que variáveis de ambiente sejam carregadas
