@@ -12,9 +12,14 @@ app.set('views', path.join(__dirname, 'views'));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
 
-// 🔥 Ler o arquivo JSON do Firebase
-const serviceAccountPath = process.env.FIREBASE_SERVICE_ACCOUNT;
-const serviceAccount = JSON.parse(fs.readFileSync(serviceAccountPath, 'utf8'));
+// 🔥 Inicializando Firebase Admin a partir da variável de ambiente
+const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
+
+admin.initializeApp({
+    credential: admin.credential.cert(serviceAccount),
+    databaseURL: process.env.FIREBASE_DB_URL
+});
+
 
 // Inicializar Firebase
 admin.initializeApp({
